@@ -21,23 +21,20 @@ jobs:
         with:
           flutter-version: '3.16.0'
 
-      - name: Cari dan Masuk ke Folder Project
+      - name: Bersihkan dan Ambil Library
         run: |
-          # Perintah ini otomatis mencari folder yang ada pubspec.yaml nya
-          PROJECT_ROOT=$(find . -name pubspec.yaml -exec dirname {} \; | head -n 1)
-          echo "PROJECT_PATH=$PROJECT_ROOT" >> $GITHUB_ENV
-
-      - name: Get Dependencies
-        run: |
-          cd ${{ env.PROJECT_PATH }}
+          # Cari lokasi pubspec.yaml secara otomatis
+          PROJ_DIR=$(find . -name pubspec.yaml -exec dirname {} \; | head -n 1)
+          cd "$PROJ_DIR"
           flutter pub get
 
-      - name: Build APK Ramping
+      - name: Build APK Split (Biar Ramping)
         run: |
-          cd ${{ env.PROJECT_PATH }}
+          PROJ_DIR=$(find . -name pubspec.yaml -exec dirname {} \; | head -n 1)
+          cd "$PROJ_DIR"
           flutter build apk --release --split-per-abi
 
-      - name: Upload APK
+      - name: Simpan Hasil APK
         uses: actions/upload-artifact@v3
         with:
           name: release-apk
